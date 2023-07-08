@@ -85,7 +85,7 @@ private:
 
   bool use_imu_;
   bool publish_tf_;
-
+  
   std::array<double, 2> diff_joint_positions_;
   double imu_angle_;
 

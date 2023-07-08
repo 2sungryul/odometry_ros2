@@ -20,6 +20,8 @@
 #include <string>
 #include <utility>
 #include <iostream>
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
 using robotis::turtlebot3::Odometry;
 using namespace std::chrono_literals;
 
@@ -31,7 +33,7 @@ Odometry::Odometry(
   wheels_separation_(wheels_separation),
   wheels_radius_(wheels_radius),
   use_imu_(false),
-  publish_tf_(false),
+  publish_tf_(true),
   imu_angle_(0.0f)
 {
   RCLCPP_INFO(nh_->get_logger(), "Init Odometry");
@@ -41,7 +43,7 @@ Odometry::Odometry(
 
   nh_->declare_parameter("odometry.frame_id");
   nh_->declare_parameter("odometry.child_frame_id");
-
+  
   nh_->declare_parameter("odometry.use_imu");
   nh_->declare_parameter("odometry.publish_tf");
 
@@ -53,7 +55,7 @@ Odometry::Odometry(
   nh_->get_parameter_or<bool>(
     "odometry.publish_tf",
     publish_tf_,
-    false);
+    true);
 
   nh_->get_parameter_or<std::string>(
     "odometry.frame_id",
@@ -69,7 +71,7 @@ Odometry::Odometry(
   odom_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>("odom", qos);
 
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(nh_);
-
+  
   if (use_imu_) {
     uint32_t queue_size = 10;
     joint_state_imu_sync_ = std::make_shared<SynchronizerJointStateImu>(queue_size);
@@ -201,7 +203,8 @@ void Odometry::publish(const rclcpp::Time & now)
 
   if (publish_tf_) {
     tf_broadcaster_->sendTransform(odom_tf);
-  }
+  }  
+  
 }
 
 void Odometry::update_joint_state(

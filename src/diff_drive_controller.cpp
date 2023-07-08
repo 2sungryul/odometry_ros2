@@ -22,7 +22,7 @@
 using robotis::turtlebot3::DiffDriveController;
 
 DiffDriveController::DiffDriveController(const float wheel_seperation, const float wheel_radius)
-: Node("diff_drive_controller", rclcpp::NodeOptions().use_intra_process_comms(true))
+: Node("odometry", rclcpp::NodeOptions().use_intra_process_comms(true))
 {
   nh_ = std::shared_ptr<::rclcpp::Node>(this, [](::rclcpp::Node *) {});
 
